@@ -161,6 +161,14 @@ Applies when the check in section 5 shows the box drawing smaller than the size 
 
 Undo: set the value you wrote down and restart the box.
 
+### I. Free memory when the box is idle (optional)
+
+Offer this only if I ask for it, and tell me first what to expect: Android already drops background apps when memory runs short, so the gain is small. On the test box, just after a start, it freed 2 MB. It helps more after hours of use. It also means an app I left in the background opens from zero the next time.
+
+Needs root and the boot script of fix B. Add block 4 of `box/boot-hook.sh` as the **last** block of that script, because it never returns. Before that, find the line in `/proc/interrupts` that grows when I press a key on the remote, and use it in the block. Check that `am kill-all` works by hand and compare `MemAvailable` before and after. After a restart, the service that runs the script must show as `running`.
+
+Undo: delete the block from the script and restart.
+
 ## 8. Final check
 
 Restart the box one last time. Three minutes later run the same measurements as in section 5 and show me a before-and-after table. Confirm that every fix I chose is still in place after the restart.

@@ -1,5 +1,11 @@
 # Changelog
 
+## After 2.1.0
+
+Prompt and box files only. The APK did not change.
+
+- **New optional fix I: free memory when the box is idle.** A fourth block for the boot script. When the remote was not used for a minute, nothing is playing and less than 40 MB is free, it asks Android to drop the background processes it can spare. The app on screen is never touched. The gain is small and the prompt says so.
+
 ## 2.1.0
 
 **Fox Launcher**

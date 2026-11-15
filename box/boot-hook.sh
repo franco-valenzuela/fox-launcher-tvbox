@@ -36,3 +36,26 @@ sleep 20
 for proto in udp tcp; do
   iptables -t nat -C OUTPUT -p $proto --dport 53 -j DNAT --to-destination 94.140.14.14:53 2>/dev/null || iptables -t nat -A OUTPUT -p $proto --dport 53 -j DNAT --to-destination 94.140.14.14:53
 done
+
+# --- Block 4: free memory when the box is idle ----------------------------------------------
+# Optional, and it must be the LAST block: it never returns. Once a minute it checks three
+# things: the remote was not used, no sound is playing, and less than 40 MB is free. When all
+# three hold it asks Android to drop the background processes it can spare ("am kill-all").
+# The app on screen and anything that is playing are never touched. It acts once per idle
+# period, so a box left alone is not swept every minute.
+# "rk_pwm_irq" is the infrared receiver of Rockchip boxes; on another box use the line of
+# /proc/interrupts that grows when a remote key is pressed.
+last=""
+done=0
+while true; do
+  sleep 60
+  now=$(grep rk_pwm_irq /proc/interrupts)
+  if [ "$now" != "$last" ] || grep -q RUNNING /proc/asound/card*/pcm*p/sub*/status 2>/dev/null; then
+    done=0
+  elif [ $done -eq 0 ]; then
+    set -- $(grep MemAvailable /proc/meminfo)
+    if [ "$2" -lt 40960 ]; then am kill-all; fi
+    done=1
+  fi
+  last=$now
+done
