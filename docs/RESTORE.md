@@ -68,9 +68,19 @@ To undo only one of them, remove only its block. Each block starts with a commen
 
 Set it again from the box: Settings, Date and time.
 
+## 7. Picture size
+
+Put back the value that was saved before the change. On the test box it was `overscan 95,96,95,96`:
+
+```
+adb shell setprop persist.sys.overscan.main "overscan 95,96,95,96"
+```
+
+Then restart the box. The box reads this value only when the HDMI link starts.
+
 ## What a factory reset does
 
-A factory reset from the box's own Settings undoes points 1, 2, 3, 4 and 6. It also removes Fox Launcher and brings the factory home screen back.
+A factory reset from the box's own Settings undoes points 1, 2, 3, 4, 6 and 7. It also removes Fox Launcher and brings the factory home screen back.
 
 It does **not** undo point 5, because that change is in the system area. Use the steps in point 5 for that.
 

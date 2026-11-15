@@ -72,6 +72,7 @@ Three factory mistakes together made the box almost unusable. None of them is a 
 
 ## 5. Smaller things
 
+- **The picture did not fill the TV.** The factory setting `persist.sys.overscan.main` was `overscan 95,96,95,96`. The box drew its picture at 1845 x 1038 inside a 1920 x 1080 signal, which left a black border on every side and bent the picture slightly. Set to `100,100,100,100` it draws the full 1920 x 1080. The box only reads that value when the HDMI link starts, so the change shows after a restart or after the HDMI output is turned off and on.
 - **Wrong time zone.** The box was set to a time zone on another continent, so every clock was wrong by two hours.
 - **The usage log is emptied at every power-on.** Android's own record of which app was used is lost on this box at each start. Fox Launcher keeps its own record so the numbers do not go back to zero.
 - **The Wi-Fi can hang during changes.** Twice during the tests the box stopped answering on the network. Unplugging it for ten seconds fixed it both times. Saving a fixed IP address in the Wi-Fi form caused one of them, which is why the prompt never does that.
@@ -87,5 +88,6 @@ Three factory mistakes together made the box almost unusable. None of them is a 
 | Factory apps running in the background | 8 or more | 0 |
 | Home screen memory (PSS) | 23.3 to 24.1 MB | 12.9 to 17.5 MB |
 | Animation scale | 0.5 | 0 |
+| Picture drawn inside a 1920 x 1080 signal | 1845 x 1038, with borders | 1920 x 1080, no borders |
 
 All figures were read on the box with standard commands (`top`, `/proc/loadavg`, `/proc/meminfo`, `dumpsys meminfo`, `logcat`).

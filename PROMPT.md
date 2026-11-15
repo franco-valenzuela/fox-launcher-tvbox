@@ -73,6 +73,7 @@ Find out and write down:
 | What is the home screen? | `cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN`, and its memory with `dumpsys meminfo`. |
 | Is it safe? | `ro.build.type`, `ro.build.tags`, `ro.adb.secure`, whether `su` exists, and any app with a random-looking name that runs as the system user. |
 | Is the clock right? | `date` and `getprop persist.sys.timezone`. |
+| Does the picture fill the TV? | Compare the size the box draws with the size it sends. On Rockchip boxes: `getprop persist.sys.overscan.main` (anything other than `overscan 100,100,100,100` shrinks the picture), the output size in `/sys/class/display/HDMI/mode`, and the drawn size (`dsp_x`, `dsp_y`) and offset (`x_st`, `y_st`) in `/sys/class/graphics/fb0/disp_info`. Bars only above and below a film are the film's own shape, not this problem. |
 
 ## 6. Report, then ask
 
@@ -147,6 +148,18 @@ Needs Android 7.1 or newer (SDK 25).
 6. Only then, and only if I agree, turn the factory home screen off with `pm disable-user`. Wait 20 seconds and check that it is listed as disabled.
 
 Undo: `pm enable <factory home package>`, `cmd package set-home-activity <factory home activity>`, then `adb uninstall com.foxlauncher.home`.
+
+### H. Make the picture fill the screen
+
+Applies when the check in section 5 shows the box drawing smaller than the size it sends, so there is a black border on all four sides of everything, the home screen included. On the test box the factory value was `overscan 95,96,95,96`: the picture was 1845 x 1038 inside a 1920 x 1080 signal, and slightly out of shape because the two directions were shrunk by different amounts.
+
+1. Write down the current value of `persist.sys.overscan.main`.
+2. `setprop persist.sys.overscan.main "overscan 100,100,100,100"`. The value is kept after a restart.
+3. The box reads that value only when the HDMI link starts: at power-on, or when the cable is reconnected. So nothing changes on screen yet. Tell me, and offer two ways: wait for the next restart, or, with root and my yes, turn the HDMI output off and on (`echo 0`, then `echo 1`, into `/sys/class/display/HDMI/enable`). That second way makes the screen go black for a few seconds. Do not do it while I am watching something unless I say so.
+4. Check `disp_info` again: the drawn size must equal the output size and the offset must be 0.
+5. Ask me to look at the TV. If the edges of the picture are now cut off, the TV itself is zooming in. That is fixed in the TV's own menu (picture size: "Just scan", "Screen fit" or "1:1"), not by shrinking the box's picture again.
+
+Undo: set the value you wrote down and restart the box.
 
 ## 8. Final check
 

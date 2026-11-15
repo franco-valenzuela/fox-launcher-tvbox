@@ -1,5 +1,12 @@
 # Changelog
 
+## After 2.0.0
+
+Prompt and documents only. The APK did not change.
+
+- **New fix H in the prompt: make the picture fill the screen.** Some boxes shrink everything they draw and leave a black border on all four sides. The prompt now checks for it, sets the picture back to full size, and explains that the change shows after a restart or after the HDMI output is turned off and on.
+- The findings and the undo guide describe the same problem as it was on the test box.
+
 ## 2.0.0
 
 First public release.
