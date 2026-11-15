@@ -25,6 +25,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -152,8 +153,17 @@ public final class MainActivity extends Activity {
     private App replacing;
 
     private TileView openingTile;
-    private String pendingPkg;
-    private long pendingStart;
+    /** How often the open app's session is written down, so a power cut loses at most this. */
+    private static final long HEARTBEAT_MS = 60_000L;
+
+    /** Runs while an app opened from here is on screen; the launcher's process stays alive. */
+    private final Runnable heartbeat = new Runnable() {
+        @Override
+        public void run() {
+            Usage.beat(prefs, System.currentTimeMillis());
+            handler.postDelayed(this, HEARTBEAT_MS);
+        }
+    };
     private boolean syncing;
 
     private final Runnable tick = new Runnable() {
@@ -224,12 +234,10 @@ public final class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         clearOpening.run();
-        if (pendingPkg != null) {
-            if (!Usage.hasAccess(this)) {
-                Usage.noteReturn(prefs, pendingPkg, pendingStart, System.currentTimeMillis());
-            }
-            pendingPkg = null;
-        }
+        // Back on the home screen: whatever app was open is closed now. This also settles a
+        // session that was cut short when the box lost power with the app still open.
+        handler.removeCallbacks(heartbeat);
+        Usage.endSession(prefs, System.currentTimeMillis(), SystemClock.elapsedRealtime());
         syncUsage();
         refreshHero();
         ticks = 0;
@@ -384,13 +392,27 @@ public final class MainActivity extends Activity {
         root.addView(top);
 
         // Name and usage of whatever has focus.
+        LinearLayout hero = box(LinearLayout.VERTICAL);
+        hero.setPadding(px(32), px(8), px(32), px(10));
+        GradientDrawable heroFrame = new GradientDrawable();
+        heroFrame.setCornerRadius(12 * u);
+        heroFrame.setColor(0x24FFFFFF);
+        heroFrame.setStroke(px(2), 0x66FFFFFF);
+        hero.setBackground(heroFrame);
         heroTitle = text(34, TEXT);
         heroTitle.setTypeface(MEDIUM);
-        heroTitle.setPadding(px(6), px(12), 0, 0);
+        heroTitle.setGravity(Gravity.CENTER);
         heroSub = text(20, 0xCCFFFFFF);
-        heroSub.setPadding(px(6), px(3), 0, 0);
-        root.addView(heroTitle);
-        root.addView(heroSub);
+        heroSub.setGravity(Gravity.CENTER);
+        heroSub.setPadding(0, px(3), 0, 0);
+        hero.addView(heroTitle);
+        hero.addView(heroSub);
+        // A fixed width: the frame does not jump as the focus moves, and the usage line fits.
+        LinearLayout.LayoutParams heroParams = new LinearLayout.LayoutParams(
+                px(820), LinearLayout.LayoutParams.WRAP_CONTENT);
+        heroParams.gravity = Gravity.CENTER_HORIZONTAL;
+        heroParams.topMargin = px(6);
+        root.addView(hero, heroParams);
 
         LinearLayout header = box(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
@@ -1060,9 +1082,9 @@ public final class MainActivity extends Activity {
         a.uses++;
         prefs.edit().putInt(PREF_USES + a.pkg, a.uses).apply();
         long now = System.currentTimeMillis();
-        Usage.noteOpen(prefs, a.pkg, now);
-        pendingPkg = a.pkg;
-        pendingStart = now;
+        Usage.beginSession(prefs, a.pkg, now, SystemClock.elapsedRealtime());
+        handler.removeCallbacks(heartbeat);
+        handler.postDelayed(heartbeat, HEARTBEAT_MS);
         return true;
     }
 

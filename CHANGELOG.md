@@ -1,10 +1,15 @@
 # Changelog
 
-## After 2.0.0
+## 2.1.0
 
-Prompt and documents only. The APK did not change.
+**Fox Launcher**
 
-- **New fix H in the prompt: make the picture fill the screen.** Some boxes shrink everything they draw and leave a black border on all four sides. The prompt now checks for it, sets the picture back to full size, and explains that the change shows after a restart or after the HDMI output is turned off and on.
+- **The time an app was used is no longer lost when the box is switched off.** Android only counts a session when the app leaves the screen, so a film watched until the box was unplugged counted as "less than 1 minute". The launcher now writes the open session down every minute and settles it at the next start. At most one minute is lost.
+- **The name of the app in focus sits in its own framed box, centred**, with the usage line under it. It no longer hangs under the clock.
+
+**The prompt**
+
+- **New fix H: make the picture fill the screen.** Some boxes shrink everything they draw and leave a black border on all four sides. The prompt now checks for it, sets the picture back to full size, and explains that the change shows after a restart or after the HDMI output is turned off and on.
 - The findings and the undo guide describe the same problem as it was on the test box.
 
 ## 2.0.0

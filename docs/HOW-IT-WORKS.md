@@ -32,8 +32,10 @@ sequenceDiagram
 |  18:05:32                                   My Wi-Fi  ·  Free RAM 39 MB  |
 |  Saturday, November 14                [Wi-Fi] [Free memory] [Settings]   |
 |                                                                          |
-|  YouTube                              <- name of the app that has focus  |
-|  Opened today 18:05  ·  Closed today 19:40  ·  12 h 30 min in total      |
+|        +--------------------------------------------------------+        |
+|        |                        YouTube                         |  app   |
+|        | Opened today 18:05 · Closed today 19:40 · 12 h in total|  in    |
+|        +--------------------------------------------------------+  focus |
 |                                                                          |
 |  Home  [pencil]                                                          |
 |  +------------------+ +------------------+ +------------------+          |
@@ -95,7 +97,7 @@ Android keeps a log of which app was on screen and when. On the test box that lo
 
 - It only ever moves forward. A number cannot go back.
 - Android's log feeds it when the launcher is allowed to read that log.
-- When it is not allowed, the launcher counts the apps it opens itself.
+- The launcher also times every app it opens itself, and writes the open session down once a minute. Android counts a session only when the app leaves the screen, so without this a box unplugged with a film still playing would lose the whole evening. With it, at most one minute is lost.
 - The screen always reads the launcher's record, never the two sources directly. So you never see one number today and an older one tomorrow.
 
 Everything stays on the box.

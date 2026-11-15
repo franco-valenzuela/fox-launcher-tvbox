@@ -29,6 +29,13 @@ final class Usage {
     /** Android's own running total at the last sync; only its growth is added to the ledger. */
     private static final String SYSTEM_TOTAL = "s_";
     private static final String LAST_SYNC = "usageSync";
+    /** The session of the app the launcher opened and that is still on screen. */
+    private static final String SESSION_PKG = "sessionPkg";
+    private static final String SESSION_START = "sessionStart";
+    private static final String SESSION_ALIVE = "sessionAlive";
+    private static final String SESSION_UPTIME = "sessionUptime";
+    /** Set once the launcher has counted a session itself. */
+    private static final String COUNTED = "k_";
 
     private static final long MINUTE = 60_000L;
     private static final long DAY = 86_400_000L;
@@ -58,28 +65,53 @@ final class Usage {
                 Process.myUid(), c.getPackageName()) == AppOpsManager.MODE_ALLOWED;
     }
 
-    /** The launcher started this app now. */
-    static void noteOpen(SharedPreferences p, String pkg, long now) {
+    /**
+     * The launcher started this app now. The session is written down at once and kept current by
+     * {@link #beat}, because Android's own log only counts a session when the app leaves the
+     * screen: a box switched off with the app still open would lose the whole evening.
+     */
+    static void beginSession(SharedPreferences p, String pkg, long now, long uptime) {
+        SharedPreferences.Editor e = p.edit();
+        e.putString(SESSION_PKG, pkg).putLong(SESSION_START, now).putLong(SESSION_ALIVE, now)
+                .putLong(SESSION_UPTIME, uptime);
         if (sane(now) && now > p.getLong(OPEN + pkg, 0)) {
-            p.edit().putLong(OPEN + pkg, now).apply();
+            e.putLong(OPEN + pkg, now);
+        }
+        e.apply();
+    }
+
+    /** The app opened from the launcher is still on screen. */
+    static void beat(SharedPreferences p, long now) {
+        if (sane(now) && p.contains(SESSION_PKG)) {
+            p.edit().putLong(SESSION_ALIVE, now).apply();
         }
     }
 
     /**
-     * The user came back to the launcher from an app it started. Only used while Android's usage
-     * log is not readable; with the log, {@link #sync} records the real figures instead.
+     * The home screen is showing again, so the open session, if any, is over. It ended now when
+     * the box has been running since the session began, and at the last {@link #beat} when the
+     * box was restarted in between.
      */
-    static void noteReturn(SharedPreferences p, String pkg, long start, long now) {
-        if (!sane(now)) {
+    static void endSession(SharedPreferences p, long now, long uptime) {
+        String pkg = p.getString(SESSION_PKG, null);
+        if (pkg == null) {
             return;
         }
+        long start = p.getLong(SESSION_START, 0);
+        long startUptime = p.getLong(SESSION_UPTIME, 0);
+        boolean sameBoot = sane(now) && uptime >= startUptime
+                && Math.abs((now - start) - (uptime - startUptime)) < 2 * MINUTE;
+        long end = sameBoot ? now : p.getLong(SESSION_ALIVE, 0);
         SharedPreferences.Editor e = p.edit();
-        if (now > p.getLong(CLOSE + pkg, 0)) {
-            e.putLong(CLOSE + pkg, now);
-        }
-        long spent = now - start;
+        e.remove(SESSION_PKG).remove(SESSION_START).remove(SESSION_ALIVE).remove(SESSION_UPTIME);
+        long spent = end - start;
         if (sane(start) && spent > 0 && spent < DAY) {
             e.putLong(TOTAL + pkg, p.getLong(TOTAL + pkg, 0) + spent);
+            if (end > p.getLong(CLOSE + pkg, 0)) {
+                e.putLong(CLOSE + pkg, end);
+            }
+            // Android's log may report this same session; sync must not add it a second time.
+            e.putBoolean(COUNTED + pkg, true);
         }
         e.apply();
     }
@@ -107,7 +139,10 @@ final class Usage {
                 continue;
             }
             long total = p.getLong(TOTAL + pkg, 0);
-            if (seen < 0) {
+            if (p.getBoolean(COUNTED + pkg, false)) {
+                // The launcher already counted the session behind this growth.
+                e.remove(COUNTED + pkg);
+            } else if (seen < 0) {
                 total = Math.max(total, system);
             } else if (system > seen) {
                 total += system - seen;
