@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Preguntas y ayuda / Questions and help"
+    url: https://github.com/franco-valenzuela/fox-launcher-tvbox/discussions/categories/q-a
+    about: "¿No sabés cómo seguir? Preguntá acá. Not sure how to continue? Ask here."
+  - name: "Mostrá tu versión / Show your version"
+    url: https://github.com/franco-valenzuela/fox-launcher-tvbox/discussions/categories/show-and-tell
+    about: "Variantes, forks y mejoras. Variants, forks and improvements."
+  - name: "Problema de seguridad / Security problem"
+    url: https://github.com/franco-valenzuela/fox-launcher-tvbox/security/advisories/new
+    about: "Reporte privado. Private report."

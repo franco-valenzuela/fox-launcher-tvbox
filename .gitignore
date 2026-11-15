@@ -1,0 +1,22 @@
+# Build tools and build output
+.toolchain/
+launcher/build/
+
+# Signing keys never go in the repository
+*.keystore
+*.jks
+*.p12
+*.pem
+
+# APKs are published as release files, not kept in the tree
+*.apk
+
+# What the prompt writes on your own computer: copies of your box and your undo guide
+backup-*/
+RESTORE-*.md
+
+# Editor and system files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

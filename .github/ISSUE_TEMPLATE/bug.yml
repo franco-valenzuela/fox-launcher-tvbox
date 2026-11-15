@@ -1,0 +1,60 @@
+name: "Error / Something is broken"
+description: "Algo no funciona como dice la guía. Something does not work as the guide says."
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Antes de escribir / Before you write**
+
+        No pegues tu dirección IP, el nombre de tu Wi-Fi, direcciones MAC, correos ni rutas de tu computadora.
+        Do not paste your IP address, your Wi-Fi name, MAC addresses, e-mails or paths from your computer.
+
+        ¿Es un problema de seguridad? No lo publiques acá: usá el reporte privado (pestaña Security).
+        Is it a security problem? Do not post it here: use the private report (Security tab).
+  - type: input
+    id: box
+    attributes:
+      label: "Tu box / Your box"
+      description: "Marca, modelo y procesador si lo sabés. Brand, model and processor if you know it."
+      placeholder: "MXQ, Rockchip RK3229"
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: "Android y número de SDK / Android and SDK number"
+      description: "El asistente muestra los dos. The assistant shows both."
+      placeholder: "Android 7.1.2, SDK 25"
+    validations:
+      required: true
+  - type: dropdown
+    id: part
+    attributes:
+      label: "¿Dónde está el problema? / Where is the problem?"
+      options:
+        - "El prompt / The prompt"
+        - "Fox Launcher"
+        - "La guía o una traducción / The guide or a translation"
+        - "Otro / Other"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: "Qué pasó / What happened"
+      description: "Qué hiciste, qué esperabas y qué pasó. What you did, what you expected and what happened."
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: "Mensaje de error, si hay / Error message, if any"
+      render: text
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: "Privacidad / Privacy"
+      options:
+        - label: "Revisé que no haya datos personales en este reporte. I checked that this report has no personal data."
+          required: true

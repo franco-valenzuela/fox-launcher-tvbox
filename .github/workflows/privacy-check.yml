@@ -1,0 +1,20 @@
+name: Privacy check
+
+# Stops a change that carries personal data (network addresses, e-mails, personal folder paths)
+# from getting into the project. The same script can be run at home: tools/privacy-scan.sh
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Look for personal data
+        run: bash tools/privacy-scan.sh

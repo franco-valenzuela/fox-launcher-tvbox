@@ -1,0 +1,34 @@
+name: "Propuesta / Proposal"
+description: "Una mejora concreta para el prompt, el launcher o la guía. A concrete improvement for the prompt, the launcher or the guide."
+labels: ["proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¿Es una idea suelta o querés mostrar tu propia versión? Va mejor en Discussions ("Ideas" o "Show and tell").
+        Is it a loose idea, or do you want to show your own version? It fits better in Discussions ("Ideas" or "Show and tell").
+
+        No pegues datos personales. Do not paste personal data.
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Qué problema resuelve / What problem it solves"
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: "La propuesta / The proposal"
+    validations:
+      required: true
+  - type: input
+    id: box
+    attributes:
+      label: "¿Lo probaste? ¿En qué box? / Did you try it? On which box?"
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: "Reglas del proyecto / Project rules"
+      options:
+        - label: "No desinstala nada, no agrega acceso a Internet al launcher y no toca los paquetes protegidos. It uninstalls nothing, adds no Internet access to the launcher and does not touch the protected packages."
+          required: true

@@ -1,0 +1,45 @@
+name: Weekly fork digest
+
+# Once a week, opens one issue that lists the forks created in the last seven days and mentions
+# the repository owner, so GitHub sends the owner a notification. No e-mail address is stored
+# here: the notification goes to whatever the owner set in their GitHub notification settings.
+#
+# GitHub pauses scheduled workflows in a repository with no activity for 60 days. Re-enable it
+# from the Actions tab, or run it by hand with "Run workflow".
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List new forks and open the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          since=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          forks=$(gh api "repos/$REPO/forks?sort=newest&per_page=100" --paginate \
+            --jq ".[] | select(.created_at >= \"$since\") | \"- [\(.full_name)](\(.html_url)), created \(.created_at[0:10])\"")
+          if [ -z "$forks" ]; then
+            echo "No new forks this week."
+            exit 0
+          fi
+          count=$(printf '%s\n' "$forks" | wc -l)
+          {
+            echo "@$OWNER: $count new fork(s) in the last 7 days."
+            echo
+            printf '%s\n' "$forks"
+            echo
+            echo "A fork can hold an idea worth bringing back here. Take a look."
+          } > body.md
+          gh label create forks --repo "$REPO" --color 0E8A16 --description "Weekly list of new forks" --force
+          gh issue create --repo "$REPO" --title "New forks: week of $(date -u +%Y-%m-%d)" --body-file body.md --label forks

@@ -1,0 +1,40 @@
+# Generic "MXQ" TV box, Rockchip RK3229 (product rk322x_box), 1 GB of memory.
+# Android 7.1.2 (SDK 25). The firmware calls itself "Android 14": build Android-14-202502281527,
+# build type userdebug, test-keys.
+#
+# Apply:  pm disable-user --user 0 <package>
+# Undo:   pm enable <package>
+# Nothing here is uninstalled. Wait 20 seconds after the last line before you restart the box.
+#
+# Lived with for one day when this list was published. Kept on purpose: Google Play services,
+# Play Store, YouTube, Chrome (it is the WebView on this box), Settings, the file explorer.
+
+# Unknown apps that run as the system user. Random names, no visible purpose.
+com.yxotakeji.cdm
+com.oranth.accessibility
+
+# "Update" services from an unknown maker. Not Google's, not security patches.
+com.uv.droid.uota
+com.uv.droid.uotaback
+
+# Factory extras: a "cleaner", an app store, a hardware test, media players.
+com.charon.rocketfly
+com.soya.store
+com.DeviceTest
+com.rockchips.mediacenter
+com.rockchips.dlna
+com.android.music
+
+# Not used on a TV box.
+com.netflix.mediaclient          # phone build that came with the box; install the TV one from the store if you want it
+com.android.printspooler
+com.android.dreams.basic
+com.svox.pico
+com.google.android.syncadapters.contacts
+com.google.android.syncadapters.calendar
+com.google.android.backuptransport
+com.google.android.partnersetup
+
+# Factory home screen. Turn it off only AFTER another home screen works and survived a restart.
+# It runs as the system user and holds camera, microphone, contacts and location permissions.
+com.ik.MXQ_Stick_MINI_8K
