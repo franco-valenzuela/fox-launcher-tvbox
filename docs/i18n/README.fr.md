@@ -2,6 +2,8 @@
 
 **Rendez à nouveau rapide un boîtier TV Android lent et bon marché. Un seul prompt fait le travail. Vous répondez seulement aux questions.**
 
+**Pas besoin de root.** Le prompt change seulement des réglages et désactive des applications. Il ne demande jamais l'accès root et ne modifie jamais un fichier système.
+
 🌍 Lisez ce guide dans votre langue :
 [English](../../README.md) ·
 [Español](README.es.md) ·
@@ -35,16 +37,16 @@ Vous n'avez pas besoin de savoir programmer. Si vous savez copier et coller un t
 
 ## Ce qui a changé sur le boîtier de test
 
-Ces chiffres ont été mesurés sur un vrai boîtier (voir **Testé sur**). Votre boîtier peut donner d'autres chiffres.
+Ces chiffres ont été mesurés sur un vrai boîtier (voir **Testé sur**). Votre boîtier peut donner d'autres chiffres. Les lignes marquées d'un \* viennent des [extras qui demandent root](../root/ROOT-FIXES.md), que le prompt ne fait pas.
 
 | Ce que nous avons mesuré | Avant | Après |
 |---|---|---|
-| Temps où le boîtier restait bloqué après chaque allumage | environ 10 minutes | aucun |
-| Temps passé par le processeur à attendre le stockage | 59 % à 86 % | 0 % à 2 % |
-| Mémoire « de secours » en plus (swap compressé) | 0 MB | 400 MB |
+| Temps où le boîtier restait bloqué après chaque allumage \* | environ 10 minutes | aucun |
+| Temps passé par le processeur à attendre le stockage \* | 59 % à 86 % | 0 % à 2 % |
+| Mémoire « de secours » en plus (swap compressé) \* | 0 MB | 400 MB |
 | Mémoire utilisée par l'écran d'accueil | 23 à 24 MB | 13 à 17 MB |
 | Applications d'usine qui tournent en arrière-plan | 8 ou plus | 0 |
-| Adresses de publicité et de pistage | autorisées | bloquées pour tout le boîtier |
+| Adresses de publicité et de pistage \* | autorisées | bloquées pour tout le boîtier |
 
 Pourquoi était-il si lent ? Lisez [ce que nous avons trouvé dans le boîtier](../FINDINGS.md). Ce texte explique trois erreurs d'usine avec des mots simples.
 
@@ -86,8 +88,8 @@ flowchart TD
     C --> D[Vous dire ce qui a été trouvé, avec des mots simples]
     D --> E{Vous dites oui ou non<br/>pour chaque correction}
     E --> F[Désactiver les applis du fabricant inutiles]
-    E --> G[Corriger les problèmes de mémoire]
-    E --> H[Bloquer les adresses de publicité]
+    E --> G[Désactiver les animations]
+    E --> H[Bloquer les adresses de publicité<br/>sur Android 9 et plus récent]
     E --> I[Installer Fox Launcher]
     F --> J[Redémarrer et mesurer à nouveau]
     G --> J
@@ -105,7 +107,7 @@ Quand c'est fini, retournez dans **Options pour les développeurs** sur le boît
 - **Une copie est enregistrée d'abord.** Avant tout changement, l'assistant enregistre l'état du boîtier.
 - **C'est vous qui décidez.** L'assistant doit expliquer chaque changement et attendre votre réponse.
 - **Vous recevez un guide pour annuler.** À la fin, vous avez un petit texte avec les étapes exactes pour revenir en arrière. Voir [comment annuler](../RESTORE.md).
-- **Deux changements vont plus loin que les autres.** Pour corriger la mémoire et bloquer les adresses de publicité sur un vieil Android, il faut ajouter un petit texte dans un fichier système du boîtier. L'assistant fait d'abord une copie de ce fichier et ne le fait que si vous dites oui.
+- **Pas de root, pas de fichiers système.** Le prompt change des réglages et désactive des applications. Une réinitialisation d'usine depuis les Réglages du boîtier lui-même annule tout.
 
 Lisez **Limites et risques** avant de commencer.
 
@@ -150,13 +152,16 @@ Lisez ceci, s'il vous plaît. C'est court.
 - **Testé sur un seul boîtier.** Le prompt vérifie chaque chose avant de la changer, mais votre boîtier peut être différent.
 - **Cela n'ajoute pas de mémoire.** Un boîtier avec 1 GB de mémoire reste un boîtier avec 1 GB. Les applications lourdes s'ouvriront toujours lentement.
 - **Cela n'enlève pas la publicité dans YouTube.** Cela bloque les adresses de publicité et de pistage pour le boîtier. Les publicités vidéo de YouTube lui-même ne changent pas.
-- **Le blocage de la publicité utilise un service d'une autre entreprise** (AdGuard DNS). Le boîtier demande à ce service chaque adresse qu'il visite. Vous pouvez dire non à cette étape.
-- **Modifier des fichiers système peut annuler votre garantie.** Vérifiez les règles du magasin où vous avez acheté le boîtier.
+- **Le blocage de la publicité demande Android 9 ou plus récent, et utilise un service d'une autre entreprise** (AdGuard DNS). Le boîtier demande à ce service chaque adresse qu'il visite. Vous pouvez dire non à cette étape.
 - **Certains boîtiers bon marché arrivent de l'usine avec des logiciels dangereux.** C'était le cas du boîtier de test. N'utilisez pas vos comptes principaux sur un boîtier comme celui-là.
 - **Vous le faites à vos propres risques.** Il n'y a aucune garantie. Voir la [licence](../../LICENSE).
 - **Ce n'est pas pour** Samsung (Tizen), LG (webOS), Roku ou Fire TV. Pour les téléviseurs Android TV et Google TV normaux, utilisez directement [cleanyourtv](https://github.com/Gathin23/cleanyourtv).
 
 Ce projet n'inclut pas, n'installe pas et ne fait pas la promotion d'applications qui donnent accès à des films, des séries ou des chaînes de télévision sans l'autorisation de leurs propriétaires.
+
+## Aller plus loin : extras qui demandent root
+
+Certains boîtiers, comme le boîtier de test, ont des problèmes plus profonds : la mémoire de secours ne démarre jamais, ou une grosse application est recompilée à chaque allumage. Les corriger demande root et modifie un fichier système, donc ce n'est pas dans le prompt. Si vous connaissez bien `adb` et acceptez le risque, c'est décrit dans un guide manuel : [extras qui demandent root](../root/ROOT-FIXES.md). Modifier des fichiers système peut annuler votre garantie.
 
 ## Testé sur
 

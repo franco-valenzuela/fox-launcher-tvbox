@@ -42,7 +42,7 @@ git clone https://github.com/franco-valenzuela/fox-launcher-tvbox
 git clone https://github.com/Gathin23/cleanyourtv
 ```
 
-- `fox-launcher-tvbox` has the launcher, an example list (`box/rk3229-mxq/debloat.txt`), the boot script blocks (`box/boot-hook.sh`), and the findings from the test box (`docs/FINDINGS.md`). Read `docs/FINDINGS.md` now.
+- `fox-launcher-tvbox` has the launcher, an example list (`box/rk3229-mxq/debloat.txt`) and the findings from the test box (`docs/FINDINGS.md`). Read `docs/FINDINGS.md` now.
 - `cleanyourtv` has tested lists for hundreds of TV models in `examples/`, tools with safety checks in `tools/`, and connection help in its own `PROMPT.md`. Use them instead of writing your own whenever they fit.
 
 If ADB is not installed on my computer, ask me before you download Android platform-tools from `https://dl.google.com/android/repository/` and keep it inside the work folder.
@@ -67,11 +67,9 @@ Find out and write down:
 | What is it really? | `getprop` for model, platform, Android release **and SDK number**. Cheap boxes lie in the release label; the SDK number is the truth. |
 | How much memory does it really have? | Compare `MemTotal` in `/proc/meminfo` with the kernel's own line (`dmesg`, "Memory:"). They can differ. |
 | Is it starved? | `/proc/loadavg`, `MemAvailable`, and the "IOW" figure in the first line of `top -n 1`. A high IOW with almost no free memory means the box keeps re-reading its apps from storage. |
-| Does it have swap? | `/proc/swaps`. Is there `/sys/block/zram0`? Which algorithms does `comp_algorithm` list? Does `dmesg` say `zram: Cannot initialise`? |
-| Is it compiling in a loop? | Is `dex2oat` running? Does `logcat -d` contain `did not finish after` or `Failed to dexopt`? Does it happen again after each restart? |
 | What uses the memory? | Processes sorted by memory. Which belong to the factory and which to Google or to me? |
 | What is the home screen? | `cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN`, and its memory with `dumpsys meminfo`. |
-| Is it safe? | `ro.build.type`, `ro.build.tags`, `ro.adb.secure`, whether `su` exists, and any app with a random-looking name that runs as the system user. |
+| Is it safe? | `ro.build.type`, `ro.build.tags`, `ro.adb.secure`, and any app with a random-looking name that runs as the system user. |
 | Is the clock right? | `date` and `getprop persist.sys.timezone`. |
 | Does the picture fill the TV? | Compare the size the box draws with the size it sends. On Rockchip boxes: `getprop persist.sys.overscan.main` (anything other than `overscan 100,100,100,100` shrinks the picture), the output size in `/sys/class/display/HDMI/mode`, and the drawn size (`dsp_x`, `dsp_y`) and offset (`x_st`, `y_st`) in `/sys/class/graphics/fb0/disp_info`. Bars only above and below a film are the film's own shape, not this problem. |
 
@@ -95,48 +93,28 @@ Each fix says when it applies. If the check does not show the problem, skip the 
 - If cleanyourtv has a list for my model in `examples/`, use it with its own tool (`tools/disable.sh` or `tools/disable.ps1`), which refuses dangerous lists.
 - If not, write a list for my box. Include only what is clearly extra: factory app stores, "cleaner" or "booster" apps, test and demo apps, factory media players, update services from unknown makers, and unused sync services. Show me the list with one reason per package. Follow rule 5.
 - If a package runs as the system user, has a meaningless name and you cannot tell what it does, say so. Recommend turning it off, and tell me it can be turned on again.
-- If the box is too starved for `pm` to finish, apply fix B in its temporary form first.
+- If the box is too starved for `pm` to finish, restart it, wait two minutes and try again, one package at a time.
 - Save the final list on my computer. Undo: `pm enable <package>`.
 
-### B. Give it compressed memory (zram)
-
-Applies when: `/sys/block/zram0` exists, `/proc/swaps` is empty, and real memory is 2 GB or less. Needs root (`adb root` works on many of these boxes). Without root, skip it and tell me.
-
-1. Pick an algorithm that `comp_algorithm` actually lists. On the test box the factory script asked for `lz4`, the kernel only had `lzo`, and so swap never started.
-2. Try it for this session only: reset `zram0`, set the algorithm, set `disksize` to about 40% of real memory, then `mkswap` and `swapon`. Measure IOW again after two minutes.
-3. Make it permanent only if I agree. Look for a script that the system already runs as root at every start (on the test box: `service flash_recovery /system/bin/install-recovery.sh` in `/init.rc`). Copy that script to my computer, remount `/system` read-write (`adb remount`), append the zram block from `box/boot-hook.sh`, check it with `sh -n`, compare its hash with the copy you sent, and restart.
-4. If there is no such script, do not rebuild the boot image and do not invent another hook. Tell me it cannot be made permanent safely on this box.
-
-Undo: put the saved copy of the script back.
-
-### C. Stop the compile loop
-
-Applies when `logcat` shows `dex2oat did not finish after ... seconds` or `Failed to dexopt` for the same package after each restart. The compiler has a fixed time limit, the box is too slow to meet it, the work is thrown away, and it starts again at the next power-on.
-
-1. With root: `setprop dalvik.vm.dex2oat-flags --no-watch-dog`. With 1 GB of memory or less also `setprop dalvik.vm.dex2oat-threads 2`.
-2. Free memory first (fix B helps), then compile once: `cmd package compile -m interpret-only -f <package>`. Wait for `Success`. It can take several minutes.
-3. To keep it after a restart, add the two `setprop` lines from `box/boot-hook.sh` to the same boot script as fix B, under the same rules.
-4. Restart. Two minutes later there must be no `dex2oat` process and no new `Failed to dexopt` line.
-
-### D. Turn off animations
+### B. Turn off animations
 
 Write down the three current values, then set `window_animation_scale`, `transition_animation_scale` and `animator_duration_scale` to `0` with `settings put global`. Undo: put the old values back.
 
-### E. Block advertising addresses
+### C. Block advertising addresses
 
 Tell me first that this sends every address the box looks up to AdGuard DNS, a service from another company, and that it does not remove the advertising inside YouTube. Only continue if I say yes.
 
 - Android 9 or newer: `settings put global private_dns_mode hostname` and `settings put global private_dns_specifier dns.adguard-dns.com`.
-- Older Android, with root: redirect port 53 (UDP and TCP) to `94.140.14.14` with the `iptables` block from `box/boot-hook.sh`, in the same boot script as fix B. It waits for the network service before it adds the rules.
+- Android 8 or older: this cannot be done from here. Tell me so and skip this fix.
 - Do **not** do this by giving the Wi-Fi a fixed IP address. On the test box, saving that form hung the Wi-Fi until the box was unplugged.
 
-Check: an advertising address such as `doubleclick.net` must resolve to `0.0.0.0` or `127.0.0.1`, and a normal site must still resolve. Addresses looked up over IPv6 are not redirected.
+Check: an advertising address such as `doubleclick.net` must resolve to `0.0.0.0` or `127.0.0.1`, and a normal site must still resolve. Undo: `settings put global private_dns_mode off`.
 
-### F. Set the clock
+### D. Set the clock
 
 If the time zone is wrong, ask me for my city and set the matching zone. Check with `date`. A wrong zone makes the home screen clock wrong.
 
-### G. Install Fox Launcher
+### E. Install Fox Launcher
 
 Needs Android 7.1 or newer (SDK 25).
 
@@ -149,25 +127,17 @@ Needs Android 7.1 or newer (SDK 25).
 
 Undo: `pm enable <factory home package>`, `cmd package set-home-activity <factory home activity>`, then `adb uninstall com.foxlauncher.home`.
 
-### H. Make the picture fill the screen
+### F. Make the picture fill the screen
 
 Applies when the check in section 5 shows the box drawing smaller than the size it sends, so there is a black border on all four sides of everything, the home screen included. On the test box the factory value was `overscan 95,96,95,96`: the picture was 1845 x 1038 inside a 1920 x 1080 signal, and slightly out of shape because the two directions were shrunk by different amounts.
 
 1. Write down the current value of `persist.sys.overscan.main`.
 2. `setprop persist.sys.overscan.main "overscan 100,100,100,100"`. The value is kept after a restart.
-3. The box reads that value only when the HDMI link starts: at power-on, or when the cable is reconnected. So nothing changes on screen yet. Tell me, and offer two ways: wait for the next restart, or, with root and my yes, turn the HDMI output off and on (`echo 0`, then `echo 1`, into `/sys/class/display/HDMI/enable`). That second way makes the screen go black for a few seconds. Do not do it while I am watching something unless I say so.
-4. Check `disp_info` again: the drawn size must equal the output size and the offset must be 0.
+3. The box reads that value only when the HDMI link starts: at power-on, or when the cable is reconnected. So nothing changes on screen yet. Tell me, and ask me to restart the box when it suits me.
+4. After the restart, check `disp_info` again: the drawn size must equal the output size and the offset must be 0.
 5. Ask me to look at the TV. If the edges of the picture are now cut off, the TV itself is zooming in. That is fixed in the TV's own menu (picture size: "Just scan", "Screen fit" or "1:1"), not by shrinking the box's picture again.
 
 Undo: set the value you wrote down and restart the box.
-
-### I. Free memory when the box is idle (optional)
-
-Offer this only if I ask for it, and tell me first what to expect: Android already drops background apps when memory runs short, so the gain is small. On the test box, just after a start, it freed 2 MB. It helps more after hours of use. It also means an app I left in the background opens from zero the next time.
-
-Needs root and the boot script of fix B. Add block 4 of `box/boot-hook.sh` as the **last** block of that script, because it never returns. Before that, find the line in `/proc/interrupts` that grows when I press a key on the remote, and use it in the block. Check that `am kill-all` works by hand and compare `MemAvailable` before and after. After a restart, the service that runs the script must show as `running`.
-
-Undo: delete the block from the script and restart.
 
 ## 8. Final check
 

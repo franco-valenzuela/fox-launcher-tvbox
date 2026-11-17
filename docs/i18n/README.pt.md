@@ -2,6 +2,8 @@
 
 **Deixe rápida de novo uma TV box Android lenta e barata. Um prompt faz o trabalho. Você só responde perguntas.**
 
+**Não precisa de root.** O prompt só muda configurações e desliga apps. Ele nunca pede acesso root e nunca muda um arquivo do sistema.
+
 🌍 Leia este guia no seu idioma:
 [English](../../README.md) ·
 [Español](README.es.md) ·
@@ -35,16 +37,16 @@ Você não precisa saber programar. Se você sabe copiar e colar um texto e resp
 
 ## O que mudou na box de teste
 
-Estes números foram medidos em uma box real (veja **Testado em**). A sua box pode dar números diferentes.
+Estes números foram medidos em uma box real (veja **Testado em**). A sua box pode dar números diferentes. As linhas marcadas com \* vêm dos [extras que precisam de root](../root/ROOT-FIXES.md), que o prompt não faz.
 
 | O que medimos | Antes | Depois |
 |---|---|---|
-| Tempo que a box ficava travada depois de cada vez que era ligada | cerca de 10 minutos | nenhum |
-| Tempo que o processador passava esperando o armazenamento | 59% a 86% | 0% a 2% |
-| Memória extra de "emergência" (swap comprimido) | 0 MB | 400 MB |
+| Tempo que a box ficava travada depois de cada vez que era ligada \* | cerca de 10 minutos | nenhum |
+| Tempo que o processador passava esperando o armazenamento \* | 59% a 86% | 0% a 2% |
+| Memória extra de "emergência" (swap comprimido) \* | 0 MB | 400 MB |
 | Memória usada pela tela inicial | 23 a 24 MB | 13 a 17 MB |
 | Apps de fábrica rodando em segundo plano | 8 ou mais | 0 |
-| Endereços de publicidade e rastreamento | permitidos | bloqueados para a box inteira |
+| Endereços de publicidade e rastreamento \* | permitidos | bloqueados para a box inteira |
 
 Por que era tão lenta? Leia [o que encontramos dentro da box](../FINDINGS.md). Ali estão explicados três erros de fábrica em palavras simples.
 
@@ -86,8 +88,8 @@ flowchart TD
     C --> D[Contar o que encontrou em palavras simples]
     D --> E{Você diz sim ou não<br/>para cada correção}
     E --> F[Desativar apps de fábrica que você não precisa]
-    E --> G[Corrigir os problemas de memória]
-    E --> H[Bloquear endereços de publicidade]
+    E --> G[Desligar as animações]
+    E --> H[Bloquear endereços de publicidade<br/>no Android 9 e mais novo]
     E --> I[Instalar o Fox Launcher]
     F --> J[Reiniciar e medir de novo]
     G --> J
@@ -105,7 +107,7 @@ Quando ele terminar, volte às **Opções do desenvolvedor** na box e desative a
 - **Primeiro é salva uma cópia.** Antes de qualquer mudança, o assistente salva como a box estava.
 - **Você decide.** O assistente precisa explicar cada mudança e esperar a sua resposta.
 - **Você recebe um guia para desfazer.** No final, você tem um texto curto com os passos exatos para voltar atrás. Veja [como desfazer](../RESTORE.md).
-- **Duas mudanças vão mais fundo do que as outras.** Corrigir a memória e bloquear endereços de publicidade em um Android antigo exigem acrescentar um pequeno texto a um arquivo do sistema da box. O assistente faz primeiro uma cópia desse arquivo e só faz isso se você disser sim.
+- **Sem root, sem arquivos do sistema.** O prompt muda configurações e desliga apps. Uma restauração de fábrica pelas Configurações da própria box desfaz tudo.
 
 Leia **Limites e riscos** antes de começar.
 
@@ -150,13 +152,16 @@ Por favor, leia isto. É curto.
 - **Testado em uma box apenas.** O prompt verifica cada coisa antes de mudar, mas a sua box pode ser diferente.
 - **Não aumenta a memória.** Uma box com 1 GB de memória continua sendo uma box com 1 GB. Apps pesados vão continuar abrindo devagar.
 - **Não remove a publicidade dentro do YouTube.** Bloqueia endereços de publicidade e rastreamento para a box. A publicidade em vídeo do próprio YouTube não é afetada.
-- **O bloqueio de publicidade usa um serviço de outra empresa** (AdGuard DNS). A box pergunta a esse serviço por cada endereço que visita. Você pode dizer não a este passo.
-- **Mudar arquivos do sistema pode acabar com a sua garantia.** Confira as regras da loja onde você comprou a box.
+- **O bloqueio de publicidade precisa do Android 9 ou mais novo e usa um serviço de outra empresa** (AdGuard DNS). A box pergunta a esse serviço por cada endereço que visita. Você pode dizer não a este passo.
 - **Algumas boxes baratas já vêm de fábrica com software inseguro.** A box de teste veio assim. Não use as suas contas principais em uma box assim.
 - **Você faz isto por sua conta e risco.** Não há garantia. Veja a [licença](../../LICENSE).
 - **Isto não serve para** Samsung (Tizen), LG (webOS), Roku ou Fire TV. Para aparelhos normais com Android TV e Google TV, use diretamente o [cleanyourtv](https://github.com/Gathin23/cleanyourtv).
 
 Este projeto não inclui, não instala nem promove apps que dão acesso a filmes, séries ou canais de TV sem a permissão dos donos.
+
+## Indo além: extras que precisam de root
+
+Algumas boxes, como a box de teste, têm problemas mais profundos: a memória de emergência nunca inicia, ou um app grande é recompilado a cada vez que a box é ligada. Corrigir isso precisa de root e muda um arquivo do sistema, então não estão no prompt. Se você conhece bem o `adb` e aceita o risco, isso está escrito como um guia manual: [extras que precisam de root](../root/ROOT-FIXES.md). Mudar arquivos do sistema pode acabar com a sua garantia.
 
 ## Testado em
 

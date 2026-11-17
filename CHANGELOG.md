@@ -1,10 +1,15 @@
 # Changelog
 
-## After 2.1.0
+## 2.2.0
 
-Prompt and box files only. The APK did not change.
+The prompt no longer uses root. The APK did not change: it is the 2.1.0 file.
 
-- **New optional fix I: free memory when the box is idle.** A fourth block for the boot script. When the remote was not used for a minute, nothing is playing and less than 40 MB is free, it asks Android to drop the background processes it can spare. The app on screen is never touched. The gain is small and the prompt says so.
+**The prompt**
+
+- **No root, no system files.** Everything the prompt does is a setting or an app turned off, and a factory reset from Settings undoes all of it.
+- The fixes that need root moved out of the prompt into a manual guide, [extras that need root](docs/root/ROOT-FIXES.md): compressed memory (zram), the compile loop at every power-on, the advertising block for Android older than 9 (iptables), turning the HDMI output off and on, and freeing memory when the box is idle. The start-up script template moved with them to `docs/root/boot-hook.sh`.
+- The fixes are now A to F: factory apps, animations, advertising addresses (Android 9 and newer), clock, Fox Launcher, picture size. The picture size change shows after the next restart.
+- `tools/privacy-scan` now also fails if `PROMPT.md` mentions root.
 
 ## 2.1.0
 

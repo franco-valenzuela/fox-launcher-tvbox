@@ -43,7 +43,7 @@ Three factory mistakes together made the box almost unusable. None of them is a 
 - Kernel log: `zram: Cannot initialise lz4`.
 - `/proc/swaps` was empty. Free memory was about 17 MB.
 
-**The fix.** Choose `lzo`, give zram 400 MB, and turn it on at every start. On the test box the processor's time waiting for storage went from 59% to 2% in two minutes.
+**The fix.** Choose `lzo`, give zram 400 MB, and turn it on at every start. On the test box the processor's time waiting for storage went from 59% to 2% in two minutes. This needs root, so it is not part of the prompt. See [extras that need root](root/ROOT-FIXES.md).
 
 ## 3. The box recompiles a big app at every power-on, and never finishes
 
@@ -55,7 +55,7 @@ Three factory mistakes together made the box almost unusable. None of them is a 
 - Log line: `dex2oat did not finish after 570 seconds`, followed by `Failed to dexopt`.
 - The same lines appeared after every restart.
 
-**The fix.** Remove the time limit (`dalvik.vm.dex2oat-flags --no-watch-dog`), use two threads instead of four, and let it finish once. With the emergency memory working it finished in 3 minutes. The result is kept, so the next power-on does not repeat it. When Google Play services updates itself, the box prepares it once more, and finishes.
+**The fix.** Remove the time limit (`dalvik.vm.dex2oat-flags --no-watch-dog`), use two threads instead of four, and let it finish once. With the emergency memory working it finished in 3 minutes. The result is kept, so the next power-on does not repeat it. When Google Play services updates itself, the box prepares it once more, and finishes. This needs root, so it is not part of the prompt. See [extras that need root](root/ROOT-FIXES.md).
 
 ## 4. The box is not safe from the factory
 
@@ -90,4 +90,4 @@ Three factory mistakes together made the box almost unusable. None of them is a 
 | Animation scale | 0.5 | 0 |
 | Picture drawn inside a 1920 x 1080 signal | 1845 x 1038, with borders | 1920 x 1080, no borders |
 
-All figures were read on the box with standard commands (`top`, `/proc/loadavg`, `/proc/meminfo`, `dumpsys meminfo`, `logcat`).
+The first four rows come from the extras that need root. All figures were read on the box with standard commands (`top`, `/proc/loadavg`, `/proc/meminfo`, `dumpsys meminfo`, `logcat`).

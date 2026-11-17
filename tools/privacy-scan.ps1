@@ -45,6 +45,18 @@ foreach ($name in $checks.Keys) {
         ''
     }
 }
+# The prompt must work without root. Fail if PROMPT.md mentions it.
+# The extras that need root live in docs/root/ROOT-FIXES.md, for people to do by hand.
+$prompt = Join-Path $Root 'PROMPT.md'
+if (Test-Path $prompt) {
+    $hits = Select-String -Path $prompt -Pattern '\b(root|su|iptables|remount)\b' -Encoding UTF8
+    if ($hits) {
+        $found = $true
+        'PROMPT.md mentions root (keep it in docs/root/ROOT-FIXES.md):'
+        foreach ($h in $hits) { '  {0}: {1}' -f $h.LineNumber, $h.Line.Trim() }
+        ''
+    }
+}
 if ($found) {
     'Remove or replace the lines above before you share this.'
     exit 1

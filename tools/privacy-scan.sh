@@ -39,6 +39,17 @@ for i in "${!patterns[@]}"; do
   fi
 done
 
+# The prompt must work without root. Fail if PROMPT.md mentions it.
+# The extras that need root live in docs/root/ROOT-FIXES.md, for people to do by hand.
+noroot='\b(root|su|iptables|remount)\b'
+hits=$(grep -nIiE -- "$noroot" "$root/PROMPT.md" || true)
+if [ -n "$hits" ]; then
+  found=1
+  echo "PROMPT.md mentions root (keep it in docs/root/ROOT-FIXES.md):"
+  echo "$hits" | sed 's/^/  /'
+  echo
+fi
+
 if [ "$found" -eq 0 ]; then
   echo "Privacy check passed: nothing personal found in the text files."
 else

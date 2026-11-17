@@ -4,7 +4,7 @@
 #
 # This file is a template, not something to run on its own. Copy only the blocks the owner chose.
 # Before you touch the box's script: save a copy of it on the computer, check the new version
-# with "sh -n", and compare its hash after you write it. See PROMPT.md, fixes B, C and E.
+# with "sh -n", and compare its hash after you write it. See ROOT-FIXES.md in this folder.
 #
 # To undo a block, delete it from the script. To undo everything, put the saved copy back.
 

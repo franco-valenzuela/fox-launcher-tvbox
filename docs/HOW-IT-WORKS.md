@@ -108,7 +108,7 @@ Everything stays on the box.
 |---|---|
 | [`PROMPT.md`](../PROMPT.md) | The prompt |
 | [`launcher/`](../launcher) | Fox Launcher source code and its build script |
-| [`box/boot-hook.sh`](../box/boot-hook.sh) | The three blocks added to the box's start-up script |
+| [`docs/root/boot-hook.sh`](root/boot-hook.sh) | The blocks for the box's start-up script, for the [extras that need root](root/ROOT-FIXES.md). Not used by the prompt |
 | [`box/rk3229-mxq/debloat.txt`](../box/rk3229-mxq/debloat.txt) | The apps turned off on the test box |
 | [`docs/FINDINGS.md`](FINDINGS.md) | What was wrong with the test box |
 | [`docs/RESTORE.md`](RESTORE.md) | How to undo |

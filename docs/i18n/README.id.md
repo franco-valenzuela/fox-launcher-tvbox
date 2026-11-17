@@ -2,6 +2,8 @@
 
 **Buat TV box Android yang lambat dan murah menjadi cepat lagi. Satu prompt mengerjakan semuanya. Anda hanya menjawab pertanyaan.**
 
+**Tidak perlu root.** Prompt hanya mengubah pengaturan dan mematikan aplikasi. Prompt tidak pernah meminta akses root dan tidak pernah mengubah file sistem.
+
 🌍 Baca panduan ini dalam bahasa Anda:
 [English](../../README.md) ·
 [Español](README.es.md) ·
@@ -35,16 +37,16 @@ Anda tidak perlu bisa membuat program. Jika Anda bisa menyalin dan menempel teks
 
 ## Apa yang berubah pada box uji
 
-Angka-angka ini diukur pada satu box sungguhan (lihat **Diuji pada**). Box Anda bisa memberi angka yang berbeda.
+Angka-angka ini diukur pada satu box sungguhan (lihat **Diuji pada**). Box Anda bisa memberi angka yang berbeda. Baris bertanda \* berasal dari [ekstra yang butuh root](../root/ROOT-FIXES.md), yang tidak dilakukan oleh prompt.
 
 | Yang kami ukur | Sebelum | Sesudah |
 |---|---|---|
-| Lama box macet setiap kali dinyalakan | sekitar 10 menit | tidak ada |
-| Waktu prosesor menunggu penyimpanan | 59% sampai 86% | 0% sampai 2% |
-| Memori "darurat" tambahan (compressed swap) | 0 MB | 400 MB |
+| Lama box macet setiap kali dinyalakan \* | sekitar 10 menit | tidak ada |
+| Waktu prosesor menunggu penyimpanan \* | 59% sampai 86% | 0% sampai 2% |
+| Memori "darurat" tambahan (compressed swap) \* | 0 MB | 400 MB |
 | Memori yang dipakai layar utama | 23 sampai 24 MB | 13 sampai 17 MB |
 | Aplikasi bawaan pabrik yang berjalan di latar belakang | 8 atau lebih | 0 |
-| Alamat iklan dan pelacakan | diizinkan | diblokir untuk seluruh box |
+| Alamat iklan dan pelacakan \* | diizinkan | diblokir untuk seluruh box |
 
 Kenapa box begitu lambat? Baca [apa yang kami temukan di dalam box](../FINDINGS.md). Di sana dijelaskan tiga kesalahan pabrik dengan kata-kata sederhana.
 
@@ -86,8 +88,8 @@ flowchart TD
     C --> D[Beri tahu Anda temuannya dengan kata sederhana]
     D --> E{Anda menjawab ya atau tidak<br/>untuk setiap perbaikan}
     E --> F[Matikan aplikasi pabrik yang tidak Anda perlukan]
-    E --> G[Perbaiki masalah memori]
-    E --> H[Blokir alamat iklan]
+    E --> G[Matikan animasi]
+    E --> H[Blokir alamat iklan<br/>di Android 9 ke atas]
     E --> I[Pasang Fox Launcher]
     F --> J[Mulai ulang dan ukur lagi]
     G --> J
@@ -105,7 +107,7 @@ Setelah selesai, kembali ke **Opsi developer** di box lalu matikan **Debugging U
 - **Salinan disimpan lebih dulu.** Sebelum ada perubahan, asisten menyimpan keadaan box sebelumnya.
 - **Anda yang memutuskan.** Asisten harus menjelaskan setiap perubahan dan menunggu jawaban Anda.
 - **Anda mendapat panduan pembatalan.** Di akhir Anda punya teks singkat berisi langkah-langkah persis untuk kembali seperti semula. Lihat [cara membatalkan](../RESTORE.md).
-- **Dua perubahan masuk lebih dalam daripada yang lain.** Memperbaiki memori dan memblokir alamat iklan pada Android lama memerlukan sedikit teks yang ditambahkan ke satu file sistem box. Asisten membuat salinan file itu lebih dulu dan hanya melakukannya jika Anda menjawab ya.
+- **Tanpa root, tanpa file sistem.** Prompt mengubah pengaturan dan mematikan aplikasi. Reset pabrik dari Pengaturan bawaan box membatalkan semuanya.
 
 Baca **Batasan dan risiko** sebelum Anda mulai.
 
@@ -150,13 +152,16 @@ Tolong baca ini. Isinya singkat.
 - **Baru diuji pada satu box saja.** Prompt memeriksa setiap hal sebelum mengubahnya, tetapi box Anda bisa berbeda.
 - **Ini tidak menambah memori.** Box dengan memori 1 GB tetap box dengan 1 GB. Aplikasi berat tetap akan terbuka lambat.
 - **Ini tidak menghapus iklan di dalam YouTube.** Ini memblokir alamat iklan dan pelacakan untuk box. Iklan video milik YouTube sendiri tidak terpengaruh.
-- **Pemblokiran iklan memakai layanan dari perusahaan lain** (AdGuard DNS). Box menanyakan setiap alamat yang dikunjunginya ke layanan itu. Anda bisa menolak langkah ini.
-- **Mengubah file sistem bisa membuat garansi Anda hangus.** Periksa aturan toko tempat Anda membeli box.
+- **Pemblokiran iklan butuh Android 9 atau lebih baru, dan memakai layanan dari perusahaan lain** (AdGuard DNS). Box menanyakan setiap alamat yang dikunjunginya ke layanan itu. Anda bisa menolak langkah ini.
 - **Beberapa box murah sudah membawa perangkat lunak yang tidak aman dari pabrik.** Box uji juga begitu. Jangan pakai akun utama Anda di box seperti itu.
 - **Anda melakukan ini dengan risiko sendiri.** Tidak ada garansi. Lihat [lisensi](../../LICENSE).
 - **Ini bukan untuk** Samsung (Tizen), LG (webOS), Roku, atau Fire TV. Untuk TV Android TV dan Google TV biasa, langsung pakai [cleanyourtv](https://github.com/Gathin23/cleanyourtv).
 
 Proyek ini tidak menyertakan, memasang, atau mempromosikan aplikasi yang memberi akses ke film, serial, atau saluran TV tanpa izin dari pemiliknya.
+
+## Lebih jauh: ekstra yang butuh root
+
+Beberapa box, seperti box uji, punya masalah yang lebih dalam: memori darurat tidak pernah menyala, atau aplikasi besar dikompilasi ulang setiap kali dinyalakan. Memperbaikinya butuh root dan mengubah file sistem, jadi tidak ada di dalam prompt. Jika Anda paham `adb` dan menerima risikonya, perbaikan itu ditulis sebagai panduan manual: [ekstra yang butuh root](../root/ROOT-FIXES.md). Mengubah file sistem bisa membuat garansi Anda hangus.
 
 ## Diuji pada
 

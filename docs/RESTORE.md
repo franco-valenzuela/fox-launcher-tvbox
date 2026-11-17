@@ -48,27 +48,11 @@ Android 9 or newer:
 adb shell settings put global private_dns_mode off
 ```
 
-Older Android: the block lives in the boot script. See point 5.
-
-## 5. The boot script (memory fix, compile fix, advertising block)
-
-These three live as marked blocks at the end of one system script. The original script was copied to your computer before it was changed. To undo all three, put the original back:
-
-```
-adb root
-adb connect <IP of the box>:5555
-adb remount
-adb push <your saved copy of the script> <its path on the box>
-adb shell "chown root:root <its path>; chmod 750 <its path>; sync; reboot"
-```
-
-To undo only one of them, remove only its block. Each block starts with a comment line that says what it is.
-
-## 6. Time zone
+## 5. Time zone
 
 Set it again from the box: Settings, Date and time.
 
-## 7. Picture size
+## 6. Picture size
 
 Put back the value that was saved before the change. On the test box it was `overscan 95,96,95,96`:
 
@@ -80,9 +64,9 @@ Then restart the box. The box reads this value only when the HDMI link starts.
 
 ## What a factory reset does
 
-A factory reset from the box's own Settings undoes points 1, 2, 3, 4, 6 and 7. It also removes Fox Launcher and brings the factory home screen back.
+A factory reset from the box's own Settings undoes all the points above. It also removes Fox Launcher and brings the factory home screen back.
 
-It does **not** undo point 5, because that change is in the system area. Use the steps in point 5 for that.
+It does **not** undo the [extras that need root](root/ROOT-FIXES.md), if you did them by hand. Their undo steps are on that page.
 
 ## If the box does not answer
 

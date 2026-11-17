@@ -2,6 +2,8 @@
 
 **Make a slow, cheap Android TV box fast again. One prompt does the work. You only answer questions.**
 
+**No root needed.** The prompt only changes settings and turns apps off. It never asks for root access and never changes a system file.
+
 🌍 Read this guide in your language:
 [English](README.md) ·
 [Español](docs/i18n/README.es.md) ·
@@ -33,16 +35,16 @@ You do not need to know how to program. If you can copy and paste a text and ans
 
 ## What changed on the test box
 
-These numbers were measured on one real box (see [Tested on](#tested-on)). Your box can give different numbers.
+These numbers were measured on one real box (see [Tested on](#tested-on)). Your box can give different numbers. Rows marked with \* come from the [extras that need root](docs/root/ROOT-FIXES.md), which the prompt does not do.
 
 | What we measured | Before | After |
 |---|---|---|
-| Time the box was frozen after every power-on | about 10 minutes | none |
-| Time the processor spent waiting for the storage | 59% to 86% | 0% to 2% |
-| Extra "emergency" memory (compressed swap) | 0 MB | 400 MB |
+| Time the box was frozen after every power-on \* | about 10 minutes | none |
+| Time the processor spent waiting for the storage \* | 59% to 86% | 0% to 2% |
+| Extra "emergency" memory (compressed swap) \* | 0 MB | 400 MB |
 | Memory used by the home screen | 23 to 24 MB | 13 to 17 MB |
 | Factory apps running in the background | 8 or more | 0 |
-| Advertising and tracking addresses | allowed | blocked for the whole box |
+| Advertising and tracking addresses \* | allowed | blocked for the whole box |
 
 Why was it so slow? Read [what we found inside the box](docs/FINDINGS.md). It explains three factory mistakes in plain words.
 
@@ -84,8 +86,8 @@ flowchart TD
     C --> D[Tell you what it found, in plain words]
     D --> E{You say yes or no<br/>to each fix}
     E --> F[Turn off factory apps you do not need]
-    E --> G[Fix the memory problems]
-    E --> H[Block advertising addresses]
+    E --> G[Turn off animations]
+    E --> H[Block advertising addresses<br/>on Android 9 and newer]
     E --> I[Install Fox Launcher]
     F --> J[Restart and measure again]
     G --> J
@@ -103,7 +105,7 @@ When it finishes, go back to **Developer options** on the box and turn **USB deb
 - **A copy is saved first.** Before any change the assistant saves how the box was.
 - **You decide.** The assistant must explain each change and wait for your answer.
 - **You get an undo guide.** At the end you have a short text with the exact steps to go back. See [how to undo](docs/RESTORE.md).
-- **Two changes go deeper than the others.** Fixing the memory and blocking advertising addresses on an old Android need a small text added to one system file of the box. The assistant makes a copy of that file first and only does it if you say yes.
+- **No root, no system files.** The prompt changes settings and turns apps off. A factory reset from the box's own Settings undoes all of it.
 
 Read [limits and risks](#limits-and-risks) before you start.
 
@@ -148,13 +150,16 @@ Please read this. It is short.
 - **Tested on one box only.** The prompt checks each thing before it changes it, but your box can be different.
 - **It does not add memory.** A box with 1 GB of memory is still a box with 1 GB. Heavy apps will still open slowly.
 - **It does not remove the advertising inside YouTube.** It blocks advertising and tracking addresses for the box. YouTube's own video advertising is not affected.
-- **The advertising block uses a service from another company** (AdGuard DNS). The box asks that service for every address it visits. You can say no to this step.
-- **Changing system files can end your warranty.** Check the rules of the shop where you bought the box.
+- **The advertising block needs Android 9 or newer, and uses a service from another company** (AdGuard DNS). The box asks that service for every address it visits. You can say no to this step.
 - **Some cheap boxes come with unsafe software from the factory.** The test box did. Do not use your main accounts on a box like that.
 - **You do this at your own risk.** There is no warranty. See the [licence](LICENSE).
 - **This is not for** Samsung (Tizen), LG (webOS), Roku or Fire TV. For normal Android TV and Google TV sets, use [cleanyourtv](https://github.com/Gathin23/cleanyourtv) directly.
 
 This project does not include, install or promote apps that give access to films, series or TV channels without permission from their owners.
+
+## Going further: extras that need root
+
+Some boxes, like the test box, have deeper problems: the emergency memory never starts, or a big app is recompiled at every power-on. Fixing those needs root and changes a system file, so they are not in the prompt. If you know `adb` well and accept the risk, they are written up as a manual guide: [extras that need root](docs/root/ROOT-FIXES.md). Changing system files can end your warranty.
 
 ## Tested on
 
